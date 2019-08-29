@@ -72,7 +72,7 @@ object StatisticsRecommender {
     ratingDF.createOrReplaceTempView("ratings")
     // 不同的统计推荐结果
     // 1. 历史热门统计，历史评分数据最多，mid，count
-    val rateMoreMoviesDF = spark.sql("select mid, count(mid) as count from ratings group by mid")
+    val rateMoreMoviesDF = spark.sql("select mid, count(mid) as count from ratings group by mid order by count desc")
     // 把结果写入对应的mongodb表中
     storeDFInMongoDB( rateMoreMoviesDF, RATE_MORE_MOVIES )
 
