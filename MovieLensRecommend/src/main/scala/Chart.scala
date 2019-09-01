@@ -1,0 +1,52 @@
+import java.awt.Color
+
+import org.jfree.chart.{ChartFactory, ChartFrame}
+import org.jfree.chart.axis.AxisLocation
+import org.jfree.chart.axis.NumberAxis
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator
+import org.jfree.chart.plot.DatasetRenderingOrder
+import org.jfree.data.category.DefaultCategoryDataset
+import org.jfree.chart.plot.PlotOrientation._
+import org.jfree.chart.renderer.category.LineAndShapeRenderer
+
+/**
+  * author: hehuan
+  * date: 2019/9/1 15:29
+  */
+object Chart {
+  def plotBarLineChart(Title:String,xLabel:String,yBarLabel:String,yBarMin:Double,yBarMax:Double,yLinelabel:String, dataBarChart:DefaultCategoryDataset,dataLineChart:DefaultCategoryDataset ):Unit={
+    //画出Bar chart
+    val chart = ChartFactory.createBarChart(
+      "", //Bar chart标题
+      xLabel,//x轴标题
+      yBarLabel,//y轴标题
+      dataBarChart,//Bar chart 数据
+      VERTICAL,// 画图方向垂直
+      true,//包含legend
+      true,//显示tooltips
+      false //不要URL generator
+    );
+
+    //获得plot
+    val plot = chart.getCategoryPlot();
+    plot.setBackgroundPaint(new Color(0xEE,0xEE,0xFF));
+    plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);
+    plot.setDataset(1,dataLineChart);plot.mapDatasetToRangeAxis(1,1)
+    //画柱形图y轴
+    val vn = plot.getRangeAxis();vn.setRange(yBarMin,yBarMax);
+    vn.setAutoTickUnitSelection(true);
+
+    //画折线图y轴
+    val axis2 = new NumberAxis(yLinelabel);plot.setRangeAxis(1,axis2);
+    val renderer2 = new LineAndShapeRenderer()
+    renderer2.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+    //设置先画柱状图，再画折线图以免折线图被盖住
+    plot.setRenderer(1,renderer2);
+    plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+    //创建画框
+    val frame = new ChartFrame(Title,chart);frame.setSize(500,500);
+    frame.pack();frame.setVisible(true)
+
+  }
+
+}
